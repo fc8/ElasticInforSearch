@@ -29,13 +29,19 @@ class ElasticSearch:
 
     def doPost(self, url, header, data):
         try:
-            resp = requests.post(url, headers=header, data=data, proxies=self.proxy, timeout=5)
+            if self.proxy:
+                resp = requests.post(url, headers=header, data=data, proxies=self.proxy, timeout=5)
+            else:
+                resp = requests.post(url, headers=header, data=data, timeout=5)
         except Exception as e:
             return -1
         return resp
 
     def doGet(self, url, header):
-        resp = requests.get(url, headers=header, proxies=self.proxy)
+        if self.proxy:
+            resp = requests.get(url, headers=header, proxies=self.proxy)
+        else:
+            resp = requests.get(url, headers=header)
         return resp
 
     def getDetail(self, index, type, id):

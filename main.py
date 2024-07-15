@@ -22,17 +22,17 @@ def count():
                 continue
             for k in keyword_line:
                 keyword = k.strip()
-                getCount(ela, keyword)
-                threading.Thread(target=getCount, args=(ela, keyword))
+                # getCount(ela, keyword)
+                threading.Thread(target=getCount, args=(ela, keyword)).start()
 
 #  询关键词出现的数量
 def getCount(ela, keyword):
     resp = ela.count(keyword.strip())
     if resp > 0:
         with write_Count_Lock:
+            info_queue.put([ela.ip_back, keyword])
             with open('hasData', 'a', encoding='utf-8') as d:
                 d.write(ela.ip_back + " " + keyword + " " + str(resp) + "\n")
-                info_queue.put([ela.ip_back,keyword])
                 print(ela.ip_back, keyword)
 
 #获取前n条带有关键字的信息
@@ -68,10 +68,22 @@ def Detail_Queue():
 
 
 if __name__ == '__main__':
+    print("""
+   ________
+  < Search >
+   --------
+        \   ^__^
+         \  (oo)\_______
+            (__)\       )\/
+                ||----w||
+                ||     ||
+                """)
     while True:
-        ipt = input("进行什么操作：\n 1.查数量\n 2.查详情\n")
+        ipt = input("进行什么操作：\n 1.查数量，同步查详情\n 2.查数量\n 3.查详情")
         if ipt == '1':
             threading.Thread(target=Detail_Queue).start()
             count()
         elif ipt == '2':
+            count()
+        elif ipt == '3':
             Detail()
